@@ -27,9 +27,34 @@ source("./R/almond_model.R")
 almond_model # Call the .R to view the function
 ```
 ```{r}
-# Aggregate daily climate data frame into yearly averages
+# Aggregate daily climate data frame into yearly and monthly averages for minimum and maximum temperature observations and sum for precipitation
 climate_averages <- climate %>% 
-  
+  group_by(month,year) %>% # Grouping the same years and months observations within the year and month column to have results separated out into monthly and yearly results
+  summarize(
+  avg_tmax_c = mean(tmax_c), # Finding the average for maximum temperature
+  avg_tmin_c = mean(tmin_c), # Finding the average for minimum temperature
+  sum_precip = sum(precip) # Finding the sum for precipitation 
+  )
+
+```
+
+```{r}
+# Checking the model against three years and values: 2000 = 9.59, 2001 = 159.51, 2002 = 0.24
+
+# Answer for 2000
+answer_year_00 = almond_model(Tn = 11.61473, P = 57.318)
+answer_year_00
+
+# Answer for 2001
+answer_year_01 = almond_model(Tn = 8.822143, P = 201.041)
+answer_year_01
+
+# Answer for 2002
+answer_year_02 = almond_model(Tn = 7.719107, P = 20.338)
+answer_year_02
+```
+```{r}
+# Summarizing the data
 
 ```
 
