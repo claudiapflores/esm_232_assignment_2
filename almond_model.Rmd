@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# Insert packages
+# Read in packages
 library(tidyverse)
 library(janitor)
 ```
@@ -22,9 +22,14 @@ climate <- read_table2("clim.txt") %>%
 ```
 
 ```{r}
-# Source almond_model.R function
-
+# Source almond_model.R function into RMarkdown
 source("./R/almond_model.R")
-almond_model
+almond_model # Call the .R to view the function
+```
+```{r}
+# Aggregate daily climate data frame into yearly averages
+climate_averages <- climate %>% 
+  
+
 ```
 
