@@ -44,15 +44,15 @@ climate_averages <- climate %>%
 ## Checking the model against three years and values: 2000 = 9.59, 2001 = 159.51, 2002 = 0.24
 
 # Answer for 2000
-answer_year_00 = almond_model(Tn = 11.61473, P = 57.318)
+answer_year_00 = almond_model(Tn_2 = 11.61473, P_1 = 57.318)
 answer_year_00
 
 # Answer for 2001
-answer_year_01 = almond_model(Tn = 8.822143, P = 201.041)
+answer_year_01 = almond_model(Tn_2 = 8.822143, P_1 = 201.041)
 answer_year_01
 
 # Answer for 2002
-answer_year_02 = almond_model(Tn = 7.719107, P = 20.338)
+answer_year_02 = almond_model(Tn_2 = 7.719107, P_1 = 20.338)
 answer_year_02
 ```
 ```{r}
@@ -60,31 +60,75 @@ answer_year_02
 
 # Creating a data frame to plot second month minimum average temperatures and first month sum of precipitation for all years
 
-climate_averages_inputs_for_almond_model <- climate_averages %>% 
-  group_by(year) %>% 
-  filter(month == c(1,2))
+climate_averages_1 <- climate_averages %>% 
+  filter(month == 1) %>% # Filtering the first month for each year
+  select(-avg_tmin_c) %>% # Removing the column named avg_tmin_c
+  select(-avg_tmax_c) # Removing the column named avg_tmax_c
+
+climate_averages_2 <- climate_averages %>% 
+  filter(month == 2) %>% # Filtering the first month for each year
+  select(year,avg_tmin_c,month) # Keep only two columns: year and avg_tmin_c
+
+climate_averages_3 <- merge(climate_averages_1,climate_averages_2, by = "year") # Combine climate_averages_loop_1 and climate_averages_loop_2 data frames into one data frame called climate_averages_loop
 
 # Creating a plot of average minimum average temperatures for the second month of each year
-ggplot(data = climate_averages_inputs_for_almond_model, 
+ggplot(data = climate_averages_3, 
        aes(x = year , y = avg_tmin_c)) + 
   geom_point(color = "orange") + 
-  labs(title = "Average Minimum Average Temperatures for the Second Month of Each Year",
+  labs(title = "Average Minimum Temperatures for the Second Month of Each Year",
        x = "Year",
        y = "Temperature (Celcius)") +
   theme_light()
 
 # Creating a plot of sum of precipitation for the first month of each year
-ggplot(data = climate_averages_inputs_for_almond_model, 
+ggplot(data = climate_averages_3, 
        aes(x = year, y = sum_precip)) + 
   geom_point(color = "navy") + 
   labs(title = "Annual Precipitation for the First Month of Each Year", 
        x = "Year",
        y = "Precipiation (mm)") +
   theme_light()
+```
 
+
+```{r}
+## Creating a loop to insert variables from aggregated climate data into the almond_model function
+
+# Create a data frame to store results from loop ran through almond_model.R function
+results = as.data.frame(matrix
+                          (nrow = 22, # Number of rows
+                            ncol= 2) # Number of columns
+                          )
+
+# Loop
+for (i in 1:nrow(climate_averages_3)) # For each value (i) in the rows in the climate_averages_3 data frame
+  {
+  results[i,2] = # Place the result for each value (i) in the results data frame in column 1
+    almond_model( # Function
+      Tn_2=climate_averages_3$avg_tmin_c[i], # Use values in the climate_averages_3 data frame column avg_tmin_c
+      P_1=climate_averages_3$sum_precip[i] # Use values in the climate_averages_3 data frame column sum_precip
+              )
+  }
+
+## Name your columns in your results data frame
+names(results)[1] <- "year" # Name the first column year
+names(results)[2] <- "almond_yield" # Name the second column almond_yield
+
+# For your results data frame, add the correct year to the almond_yield result obtained from running the loop
+results <- results %>% 
+  mutate(year = c(1989:2010)) # Add in years starting from 1989 to 2010
 ```
 
 ```{r}
+## Graphing results data frame that contain annual almond yield
 
+# Graph
+ggplot(data = results, 
+       aes(x = year, y = almond_yield)) + 
+  geom_point(color = "brown") + 
+  labs(title = "Annual Almond Yield", 
+       x = "Year",
+       y = "Almond Yield") +
+  theme_light()
 ```
 
