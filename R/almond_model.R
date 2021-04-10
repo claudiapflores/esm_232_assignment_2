@@ -7,7 +7,7 @@
 #' @return Yield anomaly per ton acre
 
 
-almond_model = function(Tn, P) {
+almond_model = function(Tn_2, P_1) {
   
   # calculate yield
   result = (-0.015 * Tn_2) - (0.0046 * (Tn_2)^2) - (0.07 * P_1) + (0.0043 * (P_1)^2) + (0.28)
