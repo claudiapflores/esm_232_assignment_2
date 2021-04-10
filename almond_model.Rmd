@@ -10,23 +10,25 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-# Read in packages
+## Read in packages
 library(tidyverse)
 library(janitor)
 ```
 
 ```{r}
-# Read in data file 'clim.txt'
+## Read in data file 'clim.txt'
 climate <- read_table2("clim.txt") %>% 
   clean_names() # Clean up column names in climate data frame
 ```
 
 ```{r}
-# Source almond_model.R function into RMarkdown
+## Source almond_model.R function into RMarkdown
 source("./R/almond_model.R")
 almond_model # Call the .R to view the function
 ```
 ```{r}
+## Aggregating climate data
+
 # Aggregate daily climate data frame into yearly and monthly averages for minimum and maximum temperature observations and sum for precipitation
 climate_averages <- climate %>% 
   group_by(month,year) %>% # Grouping the same years and months observations within the year and month column to have results separated out into monthly and yearly results
@@ -39,7 +41,7 @@ climate_averages <- climate %>%
 ```
 
 ```{r}
-# Checking the model against three years and values: 2000 = 9.59, 2001 = 159.51, 2002 = 0.24
+## Checking the model against three years and values: 2000 = 9.59, 2001 = 159.51, 2002 = 0.24
 
 # Answer for 2000
 answer_year_00 = almond_model(Tn = 11.61473, P = 57.318)
@@ -54,7 +56,35 @@ answer_year_02 = almond_model(Tn = 7.719107, P = 20.338)
 answer_year_02
 ```
 ```{r}
-# Summarizing the data
+## Summarizing and visualizing the data
+
+# Creating a data frame to plot second month minimum average temperatures and first month sum of precipitation for all years
+
+climate_averages_inputs_for_almond_model <- climate_averages %>% 
+  group_by(year) %>% 
+  filter(month == c(1,2))
+
+# Creating a plot of average minimum average temperatures for the second month of each year
+ggplot(data = climate_averages_inputs_for_almond_model, 
+       aes(x = year , y = avg_tmin_c)) + 
+  geom_point(color = "orange") + 
+  labs(title = "Average Minimum Average Temperatures for the Second Month of Each Year",
+       x = "Year",
+       y = "Temperature (Celcius)") +
+  theme_light()
+
+# Creating a plot of sum of precipitation for the first month of each year
+ggplot(data = climate_averages_inputs_for_almond_model, 
+       aes(x = year, y = sum_precip)) + 
+  geom_point(color = "navy") + 
+  labs(title = "Annual Precipitation for the First Month of Each Year", 
+       x = "Year",
+       y = "Precipiation (mm)") +
+  theme_light()
+
+```
+
+```{r}
 
 ```
 
