@@ -73,7 +73,7 @@ climate_averages_2 <- climate_averages %>%
   filter(month == 2) %>% # Filtering the first month for each year
   select(year,avg_tmin_c,month) # Keep only two columns: year and avg_tmin_c
 
-climate_averages_3 <- merge(climate_averages_1,climate_averages_2, by = "year") # Combine climate_averages_loop_1 and climate_averages_loop_2 data frames into one data frame called climate_averages_loop
+climate_averages_3 <- merge(climate_averages_1,climate_averages_2, by = "year") # Combine climate_averages_1 and climate_averages_2 data frames into one data frame called climate_averages_3
 
 # Creating a plot of average minimum average temperatures for the second month of each year
 min_temp <- ggplot(data = climate_averages_3, 
