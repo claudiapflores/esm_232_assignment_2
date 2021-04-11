@@ -6,13 +6,16 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE, 
+                      message = FALSE)
 ```
 
 ```{r}
 ## Read in packages
 library(tidyverse)
 library(janitor)
+library(patchwork)
 ```
 
 ```{r}
@@ -26,6 +29,7 @@ climate <- read_table2("clim.txt") %>%
 source("./R/almond_model.R")
 almond_model # Call the .R to view the function
 ```
+
 ```{r}
 ## Aggregating climate data
 
@@ -72,19 +76,21 @@ climate_averages_2 <- climate_averages %>%
 climate_averages_3 <- merge(climate_averages_1,climate_averages_2, by = "year") # Combine climate_averages_loop_1 and climate_averages_loop_2 data frames into one data frame called climate_averages_loop
 
 # Creating a plot of average minimum average temperatures for the second month of each year
-ggplot(data = climate_averages_3, 
+min_temp <- ggplot(data = climate_averages_3, 
        aes(x = year , y = avg_tmin_c)) + 
   geom_point(color = "orange") + 
-  labs(title = "Average Minimum Temperatures for the Second Month of Each Year",
+  labs(caption = "Figure 1: Average Minimum Daily Temperatures for February",
        x = "Year",
        y = "Temperature (Celcius)") +
   theme_light()
+```
 
+```{r}
 # Creating a plot of sum of precipitation for the first month of each year
-ggplot(data = climate_averages_3, 
+precipitation <- ggplot(data = climate_averages_3, 
        aes(x = year, y = sum_precip)) + 
   geom_point(color = "navy") + 
-  labs(title = "Annual Precipitation for the First Month of Each Year", 
+  labs(caption = "Figure 2: Annual Total Precipitation for January", 
        x = "Year",
        y = "Precipiation (mm)") +
   theme_light()
@@ -123,12 +129,19 @@ results <- results %>%
 ## Graphing results data frame that contain annual almond yield
 
 # Graph
-ggplot(data = results, 
-       aes(x = year, y = almond_yield)) + 
+almond_yield_anomaly <- ggplot(data = results, 
+                               aes(x = year, y = almond_yield)) + 
   geom_point(color = "brown") + 
-  labs(title = "Annual Almond Yield", 
+  labs(caption = "Figure 3: Annual Almond Yield Anomaly (ton per acre)", 
        x = "Year",
-       y = "Almond Yield") +
+       y = "Almond Yield Anomaly") +
   theme_light()
+```
+
+
+Almond yield anomaly increased its variability and frequency from 1988 to 2010 (**Figure 3**). In 1995, 1997, 2001, 2005, 2008, and 2010, almond yield anomalies were greater than 150 tons per acre. Comparing **Figure 3** to **Figure 1**, these years were years when the annual total precipitations for January were higher than the other years. This trend means that January precipitation has a strong and positive impact on almond yield anomaly. The highest anomaly was in 1995 when it reached `r round(max(results$almond_yield), 2)` tons per acre. Only in a few years were almond yield anomalies negative with the lower one being `r round(min(results$almond_yield), 2)` tone per acre in 1988, which has a much smaller magnitude than the positive anomalies. This gives a positive average almond yield anomaly of `r round(mean(results$almond_yield), 2)` tons per acre during 1988-2010. 
+
+```{r}
+(min_temp / precipitation) | almond_yield_anomaly
 ```
 
